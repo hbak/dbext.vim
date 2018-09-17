@@ -1674,7 +1674,7 @@ function! dbext#DB_setMultipleOptions(multi_options, ...)
     let multi_options = a:multi_options
 
     for parms in a:000
-      echon ' ' . parms
+-     echon ' ' . parms
       let multi_options = multi_options . parms
     endfor
     " Strip leading or following quotes, single or double
@@ -1726,6 +1726,7 @@ function! dbext#DB_setMultipleOptions(multi_options, ...)
         " Convert the comma separated list into a List
         let options_mv = split(options_cs, ':')
         " Loop through and prompt the user for all buffer connection parameters.
+
         for option in options_mv
             if strlen(option) > 0
                 " Retrieve the option name
@@ -1746,7 +1747,11 @@ function! dbext#DB_setMultipleOptions(multi_options, ...)
                     " Now flip the ! back to a :
                     let opt_value = substitute(opt_value, '!', ':', '')
                 endif
-                call s:DB_set(opt_name, opt_value)
+                if (opt_name ==# '') || (opt_value ==# '')
+                  call s:DB_warningMsg( "dbext: Invalid connection string token: " . option )
+                else
+                  call s:DB_set(opt_name, opt_value)
+                endif
             endif
         endfor
     endif
@@ -8689,7 +8694,6 @@ endfunction
 
 " Profile Parser {{{
 function! s:DB_parseProfile(value)
-
     " Shortcut
     if a:value =~ '^\s*$'
         return 0
@@ -8729,7 +8733,6 @@ function! s:DB_parseProfile(value)
     let rc = dbext#DB_setMultipleOptions(profile_value)
 
     let rc = s:DB_validateBufferParameters()
-
     return rc
 endfunction
 
